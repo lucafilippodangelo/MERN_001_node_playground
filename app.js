@@ -1,3 +1,45 @@
+//TEST 003 ********************************************************
+const express = require('express');
+
+//will call function "express()" and store the rich object returned in "app"
+//do not need to "http.createServer", express will do that for me.
+const app = express();
+
+
+//MIDDLEWARE function.
+// structure is -> app.use((request, response, next function)
+app.use((req, res, next) => {
+    console.log('--> FIRST CALLED IN SEQUENCE <---')
+  let body = '';
+  //LD 002 - the below is executed when the input request gets completely processed
+  req.on('end', () => {
+    const userName = body.split('=')[1];
+    if (userName) {
+      req.body = { name: userName };
+    }
+    next();//WILL FORWARD REQUEST TO NEXT MIDDLEWARE IN LINE
+  });
+  //LD 001 - keep parsing the input
+  req.on('data', chunk => {
+    body += chunk;
+  });
+});
+
+
+app.use((req, res, next) => {
+    console.log('--> //SECOND CALLED IN SEQUENCE <---')
+  if (req.body) {
+    return res.send('<h1>' + req.body.name + '</h1>');
+  }
+  //LD 000 - default and initial response
+  res.send(
+    '<form method="POST"><input type="text" name="username"><button type="submit">Create User</button></form>'
+  );
+});
+
+app.listen(5000);
+
+
 
 //TEST 001 ********************************************************
 /*
@@ -17,9 +59,9 @@ fs.writeFile('user-data.txt', 'Name: ' + userName, (err) => {
 */
 
 
-
+/*
 //TEST 002 ********************************************************
-// TO RUN -> "node app.js"
+// TO RUN -> "node app.js" then "http://localhost:5000/"
 //LD "HTTP" is another core module of node. Allow to reate a server
 const http = require('http');
 
@@ -59,4 +101,7 @@ const server = http.createServer((req, res) => {
 //this opens up, so spin up a local server to my machine not exposed externally.
 // the listener must be stopped manually -> "CTRL+C"
 server.listen(5000);
+
+//TEST 002 END ********************************************************
+*/
 
