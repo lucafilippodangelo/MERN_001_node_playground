@@ -1,4 +1,41 @@
+//TEST 004 ********************************************************
+
+const express = require('express');
+//LD body parser gives middleware to parse incoming requests bodyes
+const bodyParser = require('body-parser');
+const app = express();
+
+// NOTE -> "app.use" runs on all the incoming requests
+// in this case will try to parse from body any 
+// "urlencoded" data and populate "req.body"
+// that's out body case considering -> '<form method="POST"><input type="text" name="username"><button type="submit">Create User</button></form>'
+// it will also call NEXT
+app.use(bodyParser.urlencoded({extended: false}));
+
+// NOTE -> "app.post" runs only on POST incoming requests
+// lisyening to urel "/user"
+app.post('/user',(req, res, next) => {
+    return res.send('<h1> User: ' + req.body.username + '</h1>');
+});
+
+//trigger on GET requests with path '/'
+//NOTE the form trigger path "/user" when sending request
+app.get('/',(req, res, next) => {
+  res.send(
+    '<form action="/user" method="POST"><input type="text" name="username"><button type="submit">Create User</button></form>'
+  );
+});
+
+app.listen(5000);
+
+//TEST 004 END ********************************************************
+
+
+
+
+
 //TEST 003 ********************************************************
+/*
 const express = require('express');
 
 //will call function "express()" and store the rich object returned in "app"
@@ -27,9 +64,9 @@ app.use((req, res, next) => {
 
 
 app.use((req, res, next) => {
-    console.log('--> //SECOND CALLED IN SEQUENCE <---')
+    console.log('--> SECOND CALLED IN SEQUENCE <---')
   if (req.body) {
-    return res.send('<h1>' + req.body.name + '</h1>');
+    return res.send('<h1> User: ' + req.body.name + '</h1>');
   }
   //LD 000 - default and initial response
   res.send(
@@ -38,7 +75,8 @@ app.use((req, res, next) => {
 });
 
 app.listen(5000);
-
+*/
+//TEST 003 END ********************************************************
 
 
 //TEST 001 ********************************************************
